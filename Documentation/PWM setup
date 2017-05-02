@@ -1,0 +1,61 @@
+Download wiringPi <http://wiringpi.com/download-and-install/>
+
+Download all files from <https://github.com/Reinbert/pca9685>
+
+Create a Makefile in the directory of the desired source code you want to run, and insert the code below. Change "TARGET" in line 9 to the name of the source code file you want to run.
+
+# project name 
+# change to match your main c file
+TARGET = feedback
+
+
+TOUCH 	 := $(shell touch *)
+CC	:= gcc
+LINKER   := gcc -o
+CFLAGS	:= -c -Wall -g 
+LFLAGS	:= -lwiringPi -lwiringPiPca9685
+
+SOURCES  := $(wildcard *.c)
+INCLUDES := $(wildcard *.h)
+OBJECTS  := $(SOURCES:$%.c=$%.o)
+RM := rm -f
+
+INSTALL_DIR = /usr/bin/
+
+# linking Objects
+$(TARGET): $(OBJECTS)
+	@$(LINKER) $(@) $(OBJECTS) $(LFLAGS)
+	@echo
+	@echo "Linking Complete"
+
+
+# compiling command
+$(OBJECTS): %.o : %.c
+	@$(TOUCH) $(CC) $(CFLAGS) -c $< -o $(@)
+	@echo "Compiled "$<" successfully!"
+
+
+# install to /usr/bin
+$(phony all) : $(TARGET)
+.PHONY: install
+
+install: $(all)
+	@$(MAKE)
+	@install -m 0755 $(TARGET) $(INSTALL_DIR)
+	@echo
+	@echo "Project "$(TARGET)" installed to $(INSTALL_DIR)"
+	@echo
+	
+clean:
+	@$(RM) $(OBJECTS)
+	@$(RM) $(TARGET)
+	@echo "Cleanup complete!"
+
+	
+  
+  To execute your desired file, insert the following lines of code in the command line.
+  make clean
+  make
+  ./filename
+  
+ 
